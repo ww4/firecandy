@@ -1,10 +1,5 @@
-(ns  clojure-noob.core
+(ns hobbit-bash.core
   (:gen-class))
-
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-)
 
 (def hobbit                 [{:name "head" :size 3}
                              {:name "left-eye" :size 1}
