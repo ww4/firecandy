@@ -100,7 +100,6 @@
            accumulated-size (:size part)]
       (if (> accumulated-size target)
         (do
-          (println (str (jub) "! You hit " (hobbit-name) "'s " (:name part) "!"))
-          part
+          (str (jub) "! You hit " (hobbit-name) "'s " (:name part) "!")
           )
         (recur remaining (+ accumulated-size (:size (first remaining))))))))
