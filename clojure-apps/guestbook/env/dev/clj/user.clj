@@ -3,10 +3,12 @@
             guestbook.core))
 
 (defn start []
-  (mount/start-without #'guestbook.core/repl-server))
+  (mount/start-without #'guestbook.core/http-server
+                       #'guestbook.core/repl-server))
 
 (defn stop []
-  (mount/stop-except #'guestbook.core/repl-server))
+  (mount/stop-except #'guestbook.core/http-server
+                     #'guestbook.core/repl-server))
 
 (defn restart []
   (stop)
