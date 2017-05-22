@@ -30,7 +30,10 @@
 ;;;
 ;;; Your functions go here ...
 ;;;
-
+(defn count_occur
+[coll]
+(frequency coll)
+)
 
 (defn survey-report-css []
   "table {width: 600px} {text-align:center; min-width:75px} td {text-align:center} td:first-child {text-align:right;width:200px}")
