@@ -57,12 +57,13 @@
 )
 
 (defn choice-matrix [responses titles choices rowspecs]
-  [:tr
-   (for [title titles]
-     [:td title])]
-  (for [rowspec rowspecs] 
-    [:tr  
-     (choice-row responses (:label rowspec) choices (:q-code rowspec))])
+ [:table 
+   [:tr
+    (for [title titles]
+      [:td title])]
+   (for [rowspec rowspecs] 
+     [:tr  
+      (choice-row responses (:label rowspec) choices (:q-code rowspec))])]
 
 )
 
