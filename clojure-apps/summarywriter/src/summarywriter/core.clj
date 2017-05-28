@@ -59,6 +59,7 @@
 (defn choice-matrix [responses titles choices rowspecs]
  [:table 
    [:tr
+    [:td]
     (for [title titles]
       [:td title])]
    (for [rowspec rowspecs] 
@@ -66,6 +67,23 @@
       (choice-row responses (:label rowspec) choices (:q-code rowspec))])]
 
 )
+
+(defn answer-list [responses header q-codes]
+ [:div
+  [:h3 header]]
+ (def answers 
+   (if (vector? q-codes) 
+     (collect-answers-multi responses q-codes)  
+     (collect-answers responses q-codes)))
+ (for [answer answers]
+   [:ul answer]))
+
+
+(defn choice-list [responses header q-code choicespecs]
+  [:div
+   [:h3 header]
+   (for [choicespec choicespecs]
+     [:ul (str (:label choicespec) (count (filter (:choice-code choicespec) (collect-answers responses q-code))))])])
 
     ;; (defn survey-report-css []
      ;;   "table {width: 600px} {text-align:center; min-width:75px} td {text-align:center} td:first-child {text-align:right;width:200px}")
@@ -154,22 +172,21 @@
      ;;      )
      ;;     (choice-list
      ;;      responses "First heard about class" :Q14
-     ;;      [{:label "Email announcement: " :choice-code "A1"}
-     ;;       {:label "Merlefest website: " :choice-code "A2"}
-     ;;       {:label "DrBanjo.com or bgJAM.com: " :choice-code "A3"}
-     ;;       {:label "MandolinCafe.com: " :choice-code "A4"}
-     ;;       {:label "BanjoHangout.com: " :choice-code "A5"}
-     ;;       {:label "Other website: " :choice-code "A6"}
-     ;;       {:label "Fiddler magazine: " :choice-code "A7"}
-     ;;       {:label "Flatpicking Guitar magazine: " :choice-code "A8"}
-     ;;       {:label "Other magazine: " :choice-code "A9"}
-     ;;       {:label "Teacher: " :choice-code "A10"}
-     ;;       {:label "Saw Cabin Stage performance or workshop at Merlefest: " :choice-code "A11"}
-     ;;       {:label "Wilkes Acoustic Folk Society: " :choice-code "A12"}
-     ;;       {:label "From a previous camper: " :choice-code "A13"}
-     ;;       {:label "Other: " :choice-code "A14"}
-     ;;       ])
-     ;;     (answer-list responses "Comments--first heard about class" :Q14comment)
+          ;; [{:label "Email announcement: " :choice-code "A1"}
+          ;;  {:label "Merlefest website: " :choice-code "A2"}
+          ;;  {:label "DrBanjo.com or bgJAM.com: " :choice-code "A3"}
+          ;;  {:label "MandolinCafe.com: " :choice-code "A4"}
+          ;;  {:label "BanjoHangout.com: " :choice-code "A5"}
+          ;;  {:label "Other website: " :choice-code "A6"}
+          ;;  {:label "Fiddler magazine: " :choice-code "A7"}
+          ;;  {:label "Flatpicking Guitar magazine: " :choice-code "A8"}
+          ;;  {:label "Other magazine: " :choice-code "A9"}
+          ;;  {:label "Teacher: " :choice-code "A10"}
+          ;;  {:label "Saw Cabin Stage performance or workshop at Merlefest: " :choice-code "A11"}
+          ;;  {:label "Wilkes Acoustic Folk Society: " :choice-code "A12"}
+          ;;  {:label "From a previous camper: " :choice-code "A13"}
+          ;;  {:label "Other: " :choice-code "A14"}
+          ;;  ])
      ;;     (answer-list responses "To tell the WM office" :Q16)
      ;;     (answer-list responses "Other comments" :Q17)
      ;;     (teacher-comments responses "Scott Freeman" :Q202 )
