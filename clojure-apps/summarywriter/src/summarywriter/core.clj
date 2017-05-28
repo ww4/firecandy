@@ -60,9 +60,10 @@
   [:tr
    (for [title titles]
      [:td title])]
-  [:tr
-  (choice-row responses (:label rowspecs) choices (:q-code rowspecs))
-]
+  (for [rowspec rowspecs] 
+    [:tr  
+     (choice-row responses (:label rowspec) choices (:q-code rowspec))])
+
 )
 
     ;; (defn survey-report-css []
