@@ -41,6 +41,18 @@
     :notes "Serves 14-16. This is tripled from the original recipe."}
    })
 
+(defn save-recipe [recipe db]
+  ;;takes a map structure like output of get-recipe
+  ;;check for ingredient, add to ingredient table
+  ;;increment last recipe id
+  (let [newid (inc (:max (first (sql/query db "SELECT MAX(id) FROM recipe"))))]
+    (sql/insert! db :recipe {:title (:title recipe)
+                             :id newid})
+    (sql/insert! db :instructions (for [instruction (:instructions recipe)]
+                      {:recipe_id newid, :step_number n :instruction instruction} )) ;;get counter working
+    (sql/insert! db :ing_qty (for [ingredient (:ingredients recipe)]
+                      ))))
+
 (defn get-recipe [id db]
   (merge
    (first (sql/query db ["SELECT title, notes FROM recipe WHERE id=?" id]))
