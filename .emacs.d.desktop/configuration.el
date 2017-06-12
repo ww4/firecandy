@@ -22,6 +22,7 @@
     clojure-mode-extra-font-locking
     cider
     ido-ubiquitous
+    ido-vertical-mode
     smex
     projectile
     rainbow-delimiters
@@ -50,6 +51,13 @@
 
 (ido-mode t)
 
+;;Use vertical mode
+(ido-vertical-mode 1)
+
+;;Since the prospects are listed vertically, it might make sense to use C-n and C-p 
+;;to navigate through the options, instead of the standard C-s and C-r.
+(setq ido-vertical-define-keys 'C-n-and-C-p-only)
+
 ;; This allows partial matches, e.g. "tl" will match "Tyrion Lannister"
 (setq ido-enable-flex-matching t)
 
@@ -76,7 +84,7 @@
 
 (projectile-global-mode)
 
-(menu-bar-mode -1)
+;;(menu-bar-mode -1)
 
 (global-linum-mode)
 
