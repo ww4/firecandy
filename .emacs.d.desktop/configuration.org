@@ -1,0 +1,535 @@
+#+TITLE: Emacs configuration
+
+* Packages
+
+** Define package repositories
+#+BEGIN_SRC emacs-lisp 
+(require 'package)
+(add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/") t)
+(add-to-list 'package-archives
+             '("tromey" . "http://tromey.com/elpa/") t)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+
+;; (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+;;                          ("marmalade" . "http://marmalade-repo.org/packages/")
+;;                          ("melpa" . "http://melpa-stable.milkbox.net/packages/")))
+#+END_SRC 
+
+** Load and activate emacs packages. 
+Do this first so that the packages are loaded before
+you start trying to modify them. This also sets the
+load path.
+#+BEGIN_SRC emacs-lisp 
+(package-initialize)
+#+END_SRC 
+
+** Download the ELPA archive description if needed.
+This informs Emacs about the latest versions of all packages, and
+makes them available for download.
+#+BEGIN_SRC emacs-lisp 
+(when (not package-archive-contents)
+  (package-refresh-contents))
+#+END_SRC 
+
+** List of packages you want installed. 
+You can also install these
+manually with M-x package-install
+Add in your own as you wish:
+#+BEGIN_SRC emacs-lisp 
+(defvar my-packages
+'(  paredit
+    clojure-mode
+    clojure-mode-extra-font-locking
+    cider
+    ido-ubiquitous
+    smex
+    projectile
+    rainbow-delimiters
+;;  solarized-theme
+    tagedit
+    magit))
+#+END_SRC 
+
+** Install the packages!
+#+BEGIN_SRC emacs-lisp
+(dolist (p my-packages)
+  (when (not (package-installed-p p))
+    (package-install p)))
+#+END_SRC
+
+
+* Customization
+
+** Add load path 
+Add a directory to our load path so that when 
+you `load` things below, Emacs knows where to 
+look for the corresponding file.
+#+BEGIN_SRC emacs-lisp 
+(add-to-list 'load-path "~/.emacs.d/customizations")
+#+END_SRC 
+
+** Shell integrationh
+Sets up exec-path-from-shell so that Emacs 
+will use the correct environment variables.
+#+BEGIN_SRC emacs-lisp 
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize)
+  (exec-path-from-shell-copy-envs
+   '("PATH")))
+#+END_SRC 
+
+** Navigation
+These customizations make it easier for you to navigate files,
+switch buffers, and choose options from the minibuffer.
+
+*** Uniquify
+When several buffers visit identically-named files,
+Emacs must give the buffers distinct names. The usual method
+for making buffer names unique adds ‘<2>’, ‘<3>’, etc. to the end
+of the buffer names (all but one of them).
+The forward naming method includes part of the file's directory
+name at the beginning of the buffer name
+https://www.gnu.org/software/emacs/manual/html_node/emacs/Uniquify.html
+#+BEGIN_SRC emacs-lisp 
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'forward)
+#+END_SRC 
+
+*** Recent File Mode
+Turn on recent file mode so that you can more easily switch to
+recently edited files when you first start emacs
+#+BEGIN_SRC emacs-lisp 
+(setq recentf-save-file (concat user-emacs-directory ".recentf"))
+(require 'recentf)
+(recentf-mode 1)
+(setq recentf-max-menu-items 40)
+#+END_SRC 
+
+*** Ido Mode
+ido-mode allows you to more easily navigate choices. For example,
+when you want to switch buffers, ido presents you with a list
+of buffers in the the mini-buffer. As you start to type a buffer's
+name, ido will narrow down the list of buffers to match the text
+you've typed in
+http://www.emacswiki.org/emacs/InteractivelyDoThings
+#+BEGIN_SRC emacs-lisp 
+(ido-mode t)
+
+;; This allows partial matches, e.g. "tl" will match "Tyrion Lannister"
+(setq ido-enable-flex-matching t)
+
+;; Turn this behavior off because it's annoying
+(setq ido-use-filename-at-point nil)
+
+;; Don't try to match file across all "work" directories; only match files
+;; in the current directory displayed in the minibuffer
+(setq ido-auto-merge-work-directories-length -1)
+
+;; Includes buffer names of recently open files, even if they're not
+;; open now
+(setq ido-use-virtual-buffers t)
+
+;; This enables ido in all contexts where it could be useful, not just
+;; for selecting buffer and file names
+(ido-ubiquitous-mode 1)
+#+END_SRC 
+
+*** Ibuffer
+Shows a list of buffers
+#+BEGIN_SRC emacs-lisp 
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+#+END_SRC
+
+*** Smex
+Enhances M-x to allow easier execution of commands. Provides
+a filterable list of possible commands in the minibuffer
+http://www.emacswiki.org/emacs/Smex
+#+BEGIN_SRC emacs-lisp 
+(setq smex-save-file (concat user-emacs-directory ".smex-items"))
+(smex-initialize)
+(global-set-key (kbd "M-x") 'smex)
+#+END_SRC 
+
+*** Projectile
+#+BEGIN_SRC emacs-lisp 
+(projectile-global-mode)
+#+END_SRC 
+
+** UI Tweaks
+These customizations change the way emacs looks and disable/enable
+some user interface elements. Some useful customizations are
+commented out, and begin with the line "CUSTOMIZE". These are more
+a matter of preference and may require some fiddling to match your
+preferences
+
+*** Menu bar
+Turn off the menu bar at the top of each frame because it's distracting
+#+BEGIN_SRC emacs-lisp 
+(menu-bar-mode -1)
+#+END_SRC 
+
+*** Show line numbers
+#+BEGIN_SRC emacs-lisp 
+(global-linum-mode)
+#+END_SRC 
+
+*** Tool bar
+You can uncomment this to remove the graphical toolbar at the top. After
+awhile, you won't need the toolbar.
+#+BEGIN_SRC emacs-lisp 
+(when (fboundp 'tool-bar-mode)
+  (tool-bar-mode -1))
+#+END_SRC 
+
+*** Scroll bar
+Don't show native OS scroll bars for buffers because they're redundant
+#+BEGIN_SRC emacs-lisp 
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
+#+END_SRC 
+
+*** Color Themes
+Read http://batsov.com/articles/2012/02/19/color-theming-in-emacs-reloaded/
+for a great explanation of emacs color themes.
+https://www.gnu.org/software/emacs/manual/html_node/emacs/Custom-Themes.html
+for a more technical explanation.
+#+BEGIN_SRC emacs-lisp 
+(load-theme 'solarized-dark t)
+#+END_SRC 
+*** Font size
+increase font size for better readability
+#+BEGIN_SRC emacs-lisp 
+;; (set-face-attribute 'default nil :height 140)
+#+END_SRC 
+
+*** Clipboard settings
+These settings relate to how emacs interacts with your operating system
+#+BEGIN_SRC emacs-lisp 
+(setq ;; makes killing/yanking interact with the clipboard
+      x-select-enable-clipboard t
+
+      ;; I'm actually not sure what this does but it's recommended?
+      x-select-enable-primary t
+
+      ;; Save clipboard strings into kill ring before replacing them.
+      ;; When one selects something in another program to paste it into Emacs,
+      ;; but kills something in Emacs before actually pasting it,
+      ;; this selection is gone unless this variable is non-nil
+      save-interprogram-paste-before-kill t
+
+      ;; Shows all options when running apropos. For more info,
+      ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Apropos.html
+      apropos-do-all t
+
+      ;; Mouse yank commands yank at point instead of at click.
+      mouse-yank-at-point t)
+#+END_SRC 
+
+*** Cursor
+No cursor blinking, it's distracting
+#+BEGIN_SRC emacs-lisp 
+(blink-cursor-mode 0)
+#+END_SRC 
+
+*** Full path in title bar
+#+BEGIN_SRC emacs-lisp 
+(setq-default frame-title-format "%b (%f)")
+#+END_SRC 
+
+*** Don't pop up font menu
+#+BEGIN_SRC emacs-lisp 
+(global-set-key (kbd "s-t") '(lambda () (interactive)))
+#+END_SRC 
+
+*** No bell
+#+BEGIN_SRC emacs-lisp 
+(setq ring-bell-function 'ignore)
+#+END_SRC 
+
+** Editing Tweaks
+Customizations relating to editing a buffer.
+These make editing a bit nicer.
+
+*** Hippie Expand
+Key binding to use "hippie expand" for text autocompletion
+;; http://www.emacswiki.org/emacs/HippieExpand
+#+BEGIN_SRC emacs-lisp 
+(global-set-key (kbd "M-/") 'hippie-expand)
+#+END_SRC 
+
+Lisp-friendly hippie expand
+#+BEGIN_SRC emacs-lisp 
+(setq hippie-expand-try-functions-list
+      '(try-expand-dabbrev
+        try-expand-dabbrev-all-buffers
+        try-expand-dabbrev-from-kill
+        try-complete-lisp-symbol-partially
+        try-complete-lisp-symbol))
+#+END_SRC 
+
+*** Highlights matching parenthesis
+#+BEGIN_SRC emacs-lisp 
+(show-paren-mode 1)
+#+END_SRC 
+
+*** Highlight current line
+#+BEGIN_SRC emacs-lisp 
+(global-hl-line-mode 1)
+#+END_SRC 
+
+*** Isearch
+Interactive search key bindings. By default, C-s runs
+isearch-forward, so this swaps the bindings.
+#+BEGIN_SRC emacs-lisp 
+(global-set-key (kbd "C-s") 'isearch-forward-regexp)
+(global-set-key (kbd "C-r") 'isearch-backward-regexp)
+(global-set-key (kbd "C-M-s") 'isearch-forward)
+(global-set-key (kbd "C-M-r") 'isearch-backward)
+#+END_SRC 
+
+*** Don't use hard tabs
+#+BEGIN_SRC emacs-lisp 
+(setq-default indent-tabs-mode nil)
+#+END_SRC 
+
+*** Save my place
+When you visit a file, point goes to the last place where it
+was when you previously visited the same file.
+http://www.emacswiki.org/emacs/SavePlace
+#+BEGIN_SRC emacs-lisp 
+(require 'saveplace)
+(setq-default save-place t)
+;; keep track of saved places in ~/.emacs.d/places
+(setq save-place-file (concat user-emacs-directory "places"))
+#+END_SRC 
+
+*** Auto-backup
+Emacs can automatically create backup files. This tells Emacs to
+put all backups in ~/.emacs.d/backups. More info:
+http://www.gnu.org/software/emacs/manual/html_node/elisp/Backup-Files.html
+#+BEGIN_SRC emacs-lisp 
+(setq backup-directory-alist `(("." . ,(concat user-emacs-directory
+                                               "backups"))))
+(setq auto-save-default nil)
+#+END_SRC 
+
+*** comments
+#+BEGIN_SRC emacs-lisp 
+(defun toggle-comment-on-line ()
+  "comment or uncomment current line"
+  (interactive)
+  (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
+(global-set-key (kbd "C-;") 'toggle-comment-on-line)
+#+END_SRC 
+*** Rainbows!
+#+BEGIN_SRC emacs-lisp 
+(global-rainbow-delimiters-mode t)
+#+END_SRC 
+
+*** Use 2 spaces for tabs
+#+BEGIN_SRC emacs-lisp 
+(defun die-tabs ()
+  (interactive)
+  (set-variable 'tab-width 2)
+  (mark-whole-buffer)
+  (untabify (region-beginning) (region-end))
+  (keyboard-quit))
+#+END_SRC 
+
+** Misc
+Hard-to-categorize customizations
+
+*** Yes/no tweak
+#+BEGIN_SRC emacs-lisp 
+;; Changes all yes/no questions to y/n type
+(fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC 
+
+*** shell scripts
+#+BEGIN_SRC emacs-lisp 
+(setq-default sh-basic-offset 2)
+(setq-default sh-indentation 2)
+#+END_SRC 
+
+*** No need for ~ files when editing
+#+BEGIN_SRC emacs-lisp 
+(setq create-lockfiles nil)
+#+END_SRC 
+
+*** Go straight to scratch buffer on startup
+#+BEGIN_SRC emacs-lisp 
+(setq inhibit-startup-message t)
+#+END_SRC 
+
+** Lisp-specific
+For editing lisps
+Automatically load paredit when editing a lisp file
+More at http://www.emacswiki.org/emacs/ParEdit
+#+BEGIN_SRC emacs-lisp 
+(autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+(add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+(add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+(add-hook 'ielm-mode-hook             #'enable-paredit-mode)
+(add-hook 'lisp-mode-hook             #'enable-paredit-mode)
+(add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+(add-hook 'scheme-mode-hook           #'enable-paredit-mode)
+#+END_SRC 
+
+eldoc-mode shows documentation in the minibuffer when writing code
+http://www.emacswiki.org/emacs/ElDoc
+#+BEGIN_SRC emacs-lisp 
+(add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
+#+END_SRC 
+
+** Language-specific
+Settings specific to certain languages.
+
+*** Clojure
+
+**** Enable paredit for Clojure
+#+BEGIN_SRC emacs-lisp 
+(add-hook 'clojure-mode-hook 'enable-paredit-mode)
+#+END_SRC 
+
+**** CamelCase
+This is useful for working with camel-case tokens, like names of
+Java classes (e.g. JavaClassName)
+#+BEGIN_SRC emacs-lisp 
+(add-hook 'clojure-mode-hook 'subword-mode)
+#+END_SRC 
+
+**** More syntax highlighting
+#+BEGIN_SRC emacs-lisp 
+(require 'clojure-mode-extra-font-locking)
+#+END_SRC 
+
+**** syntax hilighting for midje
+#+BEGIN_SRC emacs-lisp 
+(add-hook 'clojure-mode-hook
+          (lambda ()
+            (setq inferior-lisp-program "lein repl")
+            (font-lock-add-keywords
+             nil
+             '(("(\\(facts?\\)"
+                (1 font-lock-keyword-face))
+               ("(\\(background?\\)"
+                (1 font-lock-keyword-face))))
+            (define-clojure-indent (fact 1))
+            (define-clojure-indent (facts 1))))
+#+END_SRC 
+
+**** Cider
+
+***** Eldoc for Cider
+provides minibuffer documentation for the code you're typing into the repl
+#+BEGIN_SRC emacs-lisp 
+(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+#+END_SRC 
+
+***** go right to the REPL buffer when it's finished connecting
+#+BEGIN_SRC emacs-lisp 
+(setq cider-repl-pop-to-buffer-on-connect t)
+#+END_SRC 
+
+***** Errors 
+When there's a cider error, show its buffer and switch to it
+#+BEGIN_SRC emacs-lisp 
+(setq cider-show-error-buffer t)
+(setq cider-auto-select-error-buffer t)
+#+END_SRC 
+
+***** Where to store the cider history.
+#+BEGIN_SRC emacs-lisp 
+(setq cider-repl-history-file "~/.emacs.d/cider-history")
+#+END_SRC 
+
+***** Wrap when navigating history.
+#+BEGIN_SRC emacs-lisp 
+(setq cider-repl-wrap-history t)
+#+END_SRC 
+
+***** enable paredit in your REPL
+#+BEGIN_SRC emacs-lisp 
+(add-hook 'cider-repl-mode-hook 'paredit-mode)
+#+END_SRC 
+
+**** Use clojure mode for other extensions
+#+BEGIN_SRC emacs-lisp 
+(add-to-list 'auto-mode-alist '("\\.edn$" . clojure-mode))
+(add-to-list 'auto-mode-alist '("\\.boot$" . clojure-mode))
+(add-to-list 'auto-mode-alist '("\\.cljs.*$" . clojure-mode))
+(add-to-list 'auto-mode-alist '("lein-env" . enh-ruby-mode))
+#+END_SRC 
+
+***** key bindings
+these help me out with the way I usually develop web apps
+#+BEGIN_SRC emacs-lisp 
+(defun cider-start-http-server ()
+  (interactive)
+  (cider-load-current-buffer)
+  (let ((ns (cider-current-ns)))
+    (cider-repl-set-ns ns)
+    (cider-interactive-eval (format "(println '(def server (%s/start))) (println 'server)" ns))
+    (cider-interactive-eval (format "(def server (%s/start)) (println server)" ns))))
+
+
+(defun cider-refresh ()
+  (interactive)
+  (cider-interactive-eval (format "(user/reset)")))
+
+(defun cider-user-ns ()
+  (interactive)
+  (cider-repl-set-ns "user"))
+
+(eval-after-load 'cider
+  '(progn
+     (define-key clojure-mode-map (kbd "C-c C-v") 'cider-start-http-server)
+     (define-key clojure-mode-map (kbd "C-M-r") 'cider-refresh)
+     (define-key clojure-mode-map (kbd "C-c u") 'cider-user-ns)
+     (define-key cider-mode-map (kbd "C-c u") 'cider-user-ns)))
+#+END_SRC 
+
+*** Javascript
+
+**** javascript / html
+#+BEGIN_SRC emacs-lisp 
+(add-to-list 'auto-mode-alist '("\\.js$" . js-mode))
+(add-hook 'js-mode-hook 'subword-mode)
+(add-hook 'html-mode-hook 'subword-mode)
+(setq js-indent-level 2)
+(eval-after-load "sgml-mode"
+  '(progn
+     (require 'tagedit)
+     (tagedit-add-paredit-like-keybindings)
+     (add-hook 'html-mode-hook (lambda () (tagedit-mode 1)))))
+#+END_SRC 
+
+**** coffeescript
+#+BEGIN_SRC emacs-lisp 
+(add-to-list 'auto-mode-alist '("\\.coffee.erb$" . coffee-mode))
+(add-hook 'coffee-mode-hook 'subword-mode)
+(add-hook 'coffee-mode-hook 'highlight-indentation-current-column-mode)
+(add-hook 'coffee-mode-hook
+          (defun coffee-mode-newline-and-indent ()
+            (define-key coffee-mode-map "\C-j" 'coffee-newline-and-indent)
+            (setq coffee-cleanup-whitespace nil)))
+(custom-set-variables
+ '(coffee-tab-width 2))
+#+END_SRC 
+
+
+* CMS Custom
+
+** Abbrev mode, always!
+#+BEGIN_SRC emacs-lisp 
+(setq default-abbrev-mode t)
+#+END_SRC 
+
+** Save desktop window layouts etc
+#+BEGIN_SRC emacs-lisp
+(desktop-save-mode 1)
+#+END_SRC

@@ -1,0 +1,51 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Sun Jun 11 12:23:57 2017
+;; Desktop file format version 206
+;; Emacs version 24.3.1
+
+;; Global section:
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring nil)
+(setq regexp-search-ring '("eth2"))
+(setq register-alist nil)
+(setq file-name-history '("/home/chris/code/firecandy/clojure-apps/guestbook/resources/templates/home.html" "/home/chris/code/firecandy/clojure-apps/guestbook/src/clj/guestbook/routes/home.clj" "/home/chris/code/firecandy/clojure-apps/hobbit-bash/src/hobbit_bash/core.clj" "/home/chris/.profile" "~/.emacs.d/" "~/.ido.last" "~/.emacs.d/configuration.org" "~/.emacs.d/auto-save-list/.saves-5765-LinuxMint~" "~/.emacs.d/init.el" "/usr/share/X11/xorg.conf.d/20-intel.conf" "~/.input.rc" "/etc/fstab" "~/bin/xrandr_2.sh" "~/clojure-noob/src/clojure_noob/core.clj" "~/.emacs.d/customizations/ui.el"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/home/chris/.conkyrc"
+  ".conkyrc"
+  'fundamental-mode
+  '(abbrev-mode projectile-mode linum-mode rainbow-delimiters-mode)
+  3333
+  '(1 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/chris/code/firecandy/clojure-apps/guestbook/resources/templates/home.html"
+  "home.html"
+  'html-mode
+  '(abbrev-mode projectile-mode linum-mode rainbow-delimiters-mode tagedit-mode paredit-mode)
+  426
+  '(380 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/chris/code/firecandy/clojure-apps/guestbook/src/clj/guestbook/routes/home.clj"
+  "home.clj"
+  'clojure-mode
+  '(abbrev-mode projectile-mode linum-mode rainbow-delimiters-mode paredit-mode eldoc-mode)
+  340
+  '(208 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
