@@ -1,5 +1,269 @@
 #+TITLE: CMS Emacs configuration
 
+* Defaults
+Reasonable settings for getting started with Emacs.
+Adapted from: Harry R. Schwartz <hello@harryrschwartz.com>
+URL: https://github.com/hrs/sensible-defaults.el/sensible-defaults.el
+
+The following are a series of functions, called by the last function.
+** Comment the region/line
+Comments or uncomments the region or the current line if
+there's no active region.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/comment-or-uncomment-region-or-line ()
+  (interactive)
+  (let (beg end)
+    (if (region-active-p)
+        (setq beg (region-beginning) end (region-end))
+      (setq beg (line-beginning-position) end (line-end-position)))
+    (comment-or-uncomment-region beg end)))
+#+END_SRC 
+
+** Reset text size
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/reset-text-size ()
+  (interactive)
+  (text-scale-set 0))
+#+END_SRC 
+
+** Search home first
+When opening a file, start searching at the user's home
+directory.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/open-files-from-home-directory ()
+  (setq default-directory "~/"))
+#+END_SRC 
+
+** Garbage collection
+Allow 20MB of memory (instead of 0.76MB) before calling
+garbage collection. This means GC runs less often, which speeds
+up some operations.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/increase-gc-threshold ()
+  (setq gc-cons-threshold 20000000))
+#+END_SRC 
+
+** Use temp directory
+Store backups and auto-saved files in TEMPORARY-FILE-DIRECTORY (which defaults to /tmp on Unix), instead of in the same directory as the file. This means we're still making backups, but not where they'll get in the way.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/backup-to-temp-directory ()
+  (setq backup-directory-alist
+        `((".*" . ,temporary-file-directory)))
+  (setq auto-save-file-name-transforms
+        `((".*" ,temporary-file-directory t))))
+#+END_SRC 
+
+** Delete trailing whitespace
+Call DELETE-TRAILING-WHITESPACE every time a buffer is saved.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/delete-trailing-whitespace ()
+  (add-hook 'before-save-hook 'delete-trailing-whitespace))
+#+END_SRC 
+
+** CamelCase as separate words
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/treat-camelcase-as-separate-words ()
+  "Treat CamelCaseSubWords as separate words in every programming
+mode."
+  (add-hook 'prog-mode-hook 'subword-mode))
+#+END_SRC 
+
+** Follow Symlinks
+When opening a file, always follow symlinks.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/automatically-follow-symlinks ()
+  (setq vc-follow-symlinks t))
+#+END_SRC 
+
+** Make scripts executable
+When saving a file that starts with `#!', make it executable.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/make-scripts-executable ()
+  (add-hook 'after-save-hook
+            'executable-make-buffer-file-executable-if-script-p))
+#+END_SRC 
+
+** Single space after periods
+Don't assume that sentences should have two spaces after periods. This ain't a typewriter.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/single-space-after-periods ()
+  (setq sentence-end-double-space nil))
+#+END_SRC
+
+** Create parent on save
+When saving a file in a directory that doesn't exist, offer to (recursively) create the file's parent directories.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/offer-to-create-parent-directories-on-save ()
+  (add-hook 'before-save-hook
+            (lambda ()
+              (when buffer-file-name
+                (let ((dir (file-name-directory buffer-file-name)))
+                  (when (and (not (file-exists-p dir))
+                             (y-or-n-p (format "Directory %s does not exist. Create it?" dir)))
+                    (make-directory dir t)))))))
+#+END_SRC 
+
+** Apply changes to highlighted region
+Turn on transient-mark-mode.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/apply-changes-to-highlighted-region ()
+  (transient-mark-mode t))
+#+END_SRC 
+
+** Overwrite selected text
+If some text is selected, and you type some text, delete the selected text and start inserting your typed text.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/overwrite-selected-text ()
+  (delete-selection-mode t))
+#+END_SRC
+
+** Ensure file ends with newline
+If you save a file that doesn't end with a newline, automatically append one.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/ensure-that-files-end-with-newline ()
+  (setq require-final-newline t))
+#+END_SRC 
+
+** Confirm closing Emacs
+Ask if you're sure that you want to close Emacs.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/confirm-closing-emacs ()
+  (setq confirm-kill-emacs 'y-or-n-p))
+#+END_SRC 
+
+** Quiet startup
+Don't present the usual startup message, and clear the scratch buffer.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/quiet-startup ()
+  (setq inhibit-startup-message t)
+  (setq initial-scratch-message nil))
+#+END_SRC 
+
+** Smart file sizes
+Add file sizes in human-readable units (KB, MB, etc) to dired buffers.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/make-dired-file-sizes-human-readable ()
+  (setq-default dired-listing-switches "-alh"))
+#+END_SRC
+
+** Ask 'y/n?'
+Don't ask `yes/no?', ask `y/n?'.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/shorten-yes-or-no ()
+  (fset 'yes-or-no-p 'y-or-n-p))
+#+END_SRC 
+
+** Always highlight code
+Turn on syntax highlighting whenever possible.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/always-highlight-code ()
+  (global-font-lock-mode t))
+#+END_SRC
+
+** Auto-refresh buffers
+When something changes a file, automatically refresh the buffer containing that file so they can't get out of sync.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/refresh-buffers-when-files-change ()
+  (global-auto-revert-mode t))
+#+END_SRC 
+
+** Show matching parens
+Visually indicate matching pairs of parentheses.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/show-matching-parens ()
+  (show-paren-mode t)
+  (setq show-paren-delay 0.0))
+#+END_SRC
+
+** Flash screen / no bell
+When you perform a problematic operation, flash the screen instead of ringing the terminal bell.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/flash-screen-instead-of-ringing-bell ()
+  (setq visible-bell t))
+#+END_SRC 
+
+** Default line length
+Set the default line length to LINE-LENGTH.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/set-default-line-length-to (line-length)
+  (setq-default fill-column line-length))
+#+END_SRC
+
+** Yank to point not mouse
+When middle-clicking the mouse to yank from the clipboard, insert the text where point is, not where the mouse cursor is.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/yank-to-point-on-mouse-click ()
+  (setq mouse-yank-at-point t))
+#+END_SRC
+
+** Use these settings
+Use all of the sensible-defaults settings. Comment out here if desired.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/use-all-settings ()
+  (sensible-defaults/open-files-from-home-directory)
+  (sensible-defaults/increase-gc-threshold)
+  (sensible-defaults/backup-to-temp-directory)
+  (sensible-defaults/delete-trailing-whitespace)
+  (sensible-defaults/treat-camelcase-as-separate-words)
+  (sensible-defaults/automatically-follow-symlinks)
+  (sensible-defaults/make-scripts-executable)
+  (sensible-defaults/single-space-after-periods)
+  (sensible-defaults/offer-to-create-parent-directories-on-save)
+  (sensible-defaults/apply-changes-to-highlighted-region)
+  (sensible-defaults/overwrite-selected-text)
+  (sensible-defaults/ensure-that-files-end-with-newline)
+  (sensible-defaults/confirm-closing-emacs)
+  (sensible-defaults/quiet-startup)
+  (sensible-defaults/make-dired-file-sizes-human-readable)
+  (sensible-defaults/shorten-yes-or-no)
+  (sensible-defaults/always-highlight-code)
+  (sensible-defaults/refresh-buffers-when-files-change)
+  (sensible-defaults/show-matching-parens)
+  (sensible-defaults/flash-screen-instead-of-ringing-bell)
+  (sensible-defaults/set-default-line-length-to 80)
+  (sensible-defaults/open-clicked-files-in-same-frame-on-mac)
+  (sensible-defaults/yank-to-point-on-mouse-click))
+#+END_SRC 
+* Keybindings:
+Custom keybindings in Emacs. From HRS' "Sensible Defaults".
+** M-;  = comments/uncomments line
+Comment or uncomment a region by hitting M-;
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/bind-commenting-and-uncommenting ()
+  (global-set-key (kbd "M-;")
+                  'sensible-defaults/comment-or-uncomment-region-or-line))
+#+END_SRC 
+
+** Home/End = move to beginning/end of line
+Make <home> and <end> move point to the beginning and end of
+the line, respectively.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/bind-home-and-end-keys ()
+  (global-set-key (kbd "<home>") 'move-beginning-of-line)
+  (global-set-key (kbd "<end>") 'move-end-of-line))
+#+END_SRC 
+
+** Ctrl+, Ctrl- = increase, decrease text size
+Bind C-+ and C-- to increase and decrease text size,
+respectively.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/bind-keys-to-change-text-size ()
+  (define-key global-map (kbd "C-)") 'sensible-defaults/reset-text-size)
+  (define-key global-map (kbd "C-+") 'text-scale-increase)
+  (define-key global-map (kbd "C-=") 'text-scale-increase)
+  (define-key global-map (kbd "C-_") 'text-scale-decrease)
+  (define-key global-map (kbd "C--") 'text-scale-decrease))
+#+END_SRC 
+
+** Use these keybindings
+Use all of the sensible-defaults keybindings. Comment out to disable.
+#+BEGIN_SRC emacs-lisp 
+(defun sensible-defaults/use-all-keybindings ()
+  (sensible-defaults/bind-commenting-and-uncommenting)
+  (sensible-defaults/bind-home-and-end-keys)
+  (sensible-defaults/bind-keys-to-change-text-size))
+#+END_SRC
+
 * Packages
 
 ** Define package repositories
@@ -10,11 +274,10 @@
 (add-to-list 'package-archives
              '("tromey" . "http://tromey.com/elpa/") t)
 (add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
-
+             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 ;; (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
 ;;                          ("marmalade" . "http://marmalade-repo.org/packages/")
-;;                          ("melpa" . "http://melpa-stable.milkbox.net/packages/")))
+;;                          ("melpa-stable" . "https://stable.melpa.org/packages/")))
 #+END_SRC 
 
 ** Load and activate emacs packages. 
@@ -50,7 +313,8 @@ Add in your own as you wish:
     rainbow-delimiters
 ;;  solarized-theme
     tagedit
-    magit))
+    magit
+    markdown-mode))
 #+END_SRC 
 
 ** Install the packages!
@@ -366,6 +630,10 @@ http://www.gnu.org/software/emacs/manual/html_node/elisp/Backup-Files.html
 #+END_SRC 
 
 ** Abbrev mode, always!
+My favorite abbrev so far is the one I use in this file... 
+  bs expands to #+BEGIN_SRC emacs-lisp 
+  es expands to #+END_SRC 
+
 #+BEGIN_SRC emacs-lisp 
 (setq default-abbrev-mode t)
 #+END_SRC 

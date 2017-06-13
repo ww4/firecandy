@@ -1,28 +1,29 @@
-# this is a Clojure-friendly emacs config
+# Emacs Configuration Files
 
-If you're new to emacs, check out
-[this introductory tutorial](http://www.braveclojure.com/basic-emacs/)!
+This is my current Emacs setup. I've pieced it together out of a lot of other wonderful files shared by mush smarter folks than me.
+
+I use Emacs mostly to write and debug Clojure, using the Cider REPL and several modes like Paredit, to keep things tidy.
+
+It also has some modes for Markdown and Org-Mode, which I am experimenting with.
+
+## How it works
+Everything is kept in an org file called "configuration.org", a highly commented and structured human-readable file with snippets of Elisp. The actual init.el file parses this and generates a "configuration.el" file (using org-babel-load-file) from the snippets, a clean and minimal init script.
 
 ## Organization
 
-I've tried to separate everything logically and document the purpose
-of every line. [`init.el`](./init.el) acts as a kind of table of
-contents.  It's a good idea to eventually go through `init.el` and the
-files under the `customizations` directory so that you know exactly
-what's going on.
+I have the settings broken into 9 categories.  Defaults, Keybindings, Packages, Load Path, Shell, Navigation, UI, Editing, and Languages. 
 
-## Supporting CSS, HTML, JS, etc.
+Sub-sections are individual functions, with a code-block. Most of them have comments explaining the purpose of a given setting.
 
-Emacs has decent support for CSS, HTML, JS, and many other file types out of the box, but if you want better support, then have a look at [my personal emacs config's init.el](https://github.com/flyingmachine/emacs.d/blob/master/init.el). It's meant to read as a table of contents. The emacs.d as a whole adds the following:
+## Sources
 
-* [Customizes js-mode and html editing](https://github.com/flyingmachine/emacs.d/blob/master/customizations/setup-js.el)
-    * Sets indentation level to 2 spaces for JS
-    * enables subword-mode so that M-f and M-b break on capitalization changes
-    * Uses `tagedit` to give you paredit-like functionality when editing html
-    * adds support for coffee mode
-* [Uses enh-ruby-mode for ruby editing](https://github.com/flyingmachine/emacs.d/blob/master/customizations/setup-ruby.el). enh-ruby-mode is a little nicer than the built-in ruby-mode, in my opinion.
-    * Associates many filenames and extensions with enh-ruby-mode (.rb, .rake, Rakefile, etc)
-    * Adds keybindings for running specs
-* Adds support for YAML and SCSS using the yaml-mode and scss-mode packages
+Inside you will find code shamelessly stolen from:
 
-In general, if you want to add support for a language then you should be able to find good instructions for it through Google. Most of the time, you'll just need to install the "x-lang-mode" package for it.
+- Clojure for the Brave and True (most of his Clojure-y bits)
+- Harry R Schwartz (extensively copied [his configuration.org file](https://github.com/hrs/dotfiles/blob/master/emacs/.emacs.d/configuration.org)  and implementation)
+- Stack Overflow answers
+- My dad's Emacs config and favorite packages
+
+##Dead code
+
+I'm working to minimize this. However when you copy large portions of several other people's code, cruft accumulates. Over time this will get pruned back to what I'm actually using. For now, some of the files are not actually in use.

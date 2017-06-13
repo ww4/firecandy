@@ -1,15 +1,151 @@
 
+(defun sensible-defaults/comment-or-uncomment-region-or-line ()
+  (interactive)
+  (let (beg end)
+    (if (region-active-p)
+        (setq beg (region-beginning) end (region-end))
+      (setq beg (line-beginning-position) end (line-end-position)))
+    (comment-or-uncomment-region beg end)))
+
+(defun sensible-defaults/reset-text-size ()
+  (interactive)
+  (text-scale-set 0))
+
+(defun sensible-defaults/open-files-from-home-directory ()
+  (setq default-directory "~/"))
+
+(defun sensible-defaults/increase-gc-threshold ()
+  (setq gc-cons-threshold 20000000))
+
+(defun sensible-defaults/backup-to-temp-directory ()
+  (setq backup-directory-alist
+        `((".*" . ,temporary-file-directory)))
+  (setq auto-save-file-name-transforms
+        `((".*" ,temporary-file-directory t))))
+
+(defun sensible-defaults/delete-trailing-whitespace ()
+  (add-hook 'before-save-hook 'delete-trailing-whitespace))
+
+(defun sensible-defaults/treat-camelcase-as-separate-words ()
+  "Treat CamelCaseSubWords as separate words in every programming
+mode."
+  (add-hook 'prog-mode-hook 'subword-mode))
+
+(defun sensible-defaults/automatically-follow-symlinks ()
+  (setq vc-follow-symlinks t))
+
+(defun sensible-defaults/make-scripts-executable ()
+  (add-hook 'after-save-hook
+            'executable-make-buffer-file-executable-if-script-p))
+
+(defun sensible-defaults/single-space-after-periods ()
+  (setq sentence-end-double-space nil))
+
+(defun sensible-defaults/offer-to-create-parent-directories-on-save ()
+  (add-hook 'before-save-hook
+            (lambda ()
+              (when buffer-file-name
+                (let ((dir (file-name-directory buffer-file-name)))
+                  (when (and (not (file-exists-p dir))
+                             (y-or-n-p (format "Directory %s does not exist. Create it?" dir)))
+                    (make-directory dir t)))))))
+
+(defun sensible-defaults/apply-changes-to-highlighted-region ()
+  (transient-mark-mode t))
+
+(defun sensible-defaults/overwrite-selected-text ()
+  (delete-selection-mode t))
+
+(defun sensible-defaults/ensure-that-files-end-with-newline ()
+  (setq require-final-newline t))
+
+(defun sensible-defaults/confirm-closing-emacs ()
+  (setq confirm-kill-emacs 'y-or-n-p))
+
+(defun sensible-defaults/quiet-startup ()
+  (setq inhibit-startup-message t)
+  (setq initial-scratch-message nil))
+
+(defun sensible-defaults/make-dired-file-sizes-human-readable ()
+  (setq-default dired-listing-switches "-alh"))
+
+(defun sensible-defaults/shorten-yes-or-no ()
+  (fset 'yes-or-no-p 'y-or-n-p))
+
+(defun sensible-defaults/always-highlight-code ()
+  (global-font-lock-mode t))
+
+(defun sensible-defaults/refresh-buffers-when-files-change ()
+  (global-auto-revert-mode t))
+
+(defun sensible-defaults/show-matching-parens ()
+  (show-paren-mode t)
+  (setq show-paren-delay 0.0))
+
+(defun sensible-defaults/flash-screen-instead-of-ringing-bell ()
+  (setq visible-bell t))
+
+(defun sensible-defaults/set-default-line-length-to (line-length)
+  (setq-default fill-column line-length))
+
+(defun sensible-defaults/yank-to-point-on-mouse-click ()
+  (setq mouse-yank-at-point t))
+
+(defun sensible-defaults/use-all-settings ()
+  (sensible-defaults/open-files-from-home-directory)
+  (sensible-defaults/increase-gc-threshold)
+  (sensible-defaults/backup-to-temp-directory)
+  (sensible-defaults/delete-trailing-whitespace)
+  (sensible-defaults/treat-camelcase-as-separate-words)
+  (sensible-defaults/automatically-follow-symlinks)
+  (sensible-defaults/make-scripts-executable)
+  (sensible-defaults/single-space-after-periods)
+  (sensible-defaults/offer-to-create-parent-directories-on-save)
+  (sensible-defaults/apply-changes-to-highlighted-region)
+  (sensible-defaults/overwrite-selected-text)
+  (sensible-defaults/ensure-that-files-end-with-newline)
+  (sensible-defaults/confirm-closing-emacs)
+  (sensible-defaults/quiet-startup)
+  (sensible-defaults/make-dired-file-sizes-human-readable)
+  (sensible-defaults/shorten-yes-or-no)
+  (sensible-defaults/always-highlight-code)
+  (sensible-defaults/refresh-buffers-when-files-change)
+  (sensible-defaults/show-matching-parens)
+  (sensible-defaults/flash-screen-instead-of-ringing-bell)
+  (sensible-defaults/set-default-line-length-to 80)
+  (sensible-defaults/open-clicked-files-in-same-frame-on-mac)
+  (sensible-defaults/yank-to-point-on-mouse-click))
+
+(defun sensible-defaults/bind-commenting-and-uncommenting ()
+  (global-set-key (kbd "M-;")
+                  'sensible-defaults/comment-or-uncomment-region-or-line))
+
+(defun sensible-defaults/bind-home-and-end-keys ()
+  (global-set-key (kbd "<home>") 'move-beginning-of-line)
+  (global-set-key (kbd "<end>") 'move-end-of-line))
+
+(defun sensible-defaults/bind-keys-to-change-text-size ()
+  (define-key global-map (kbd "C-)") 'sensible-defaults/reset-text-size)
+  (define-key global-map (kbd "C-+") 'text-scale-increase)
+  (define-key global-map (kbd "C-=") 'text-scale-increase)
+  (define-key global-map (kbd "C-_") 'text-scale-decrease)
+  (define-key global-map (kbd "C--") 'text-scale-decrease))
+
+(defun sensible-defaults/use-all-keybindings ()
+  (sensible-defaults/bind-commenting-and-uncommenting)
+  (sensible-defaults/bind-home-and-end-keys)
+  (sensible-defaults/bind-keys-to-change-text-size))
+
 (require 'package)
 (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/") t)
 (add-to-list 'package-archives
              '("tromey" . "http://tromey.com/elpa/") t)
 (add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
-
+             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 ;; (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
 ;;                          ("marmalade" . "http://marmalade-repo.org/packages/")
-;;                          ("melpa" . "http://melpa-stable.milkbox.net/packages/")))
+;;                          ("melpa-stable" . "https://stable.melpa.org/packages/")))
 
 (package-initialize)
 
@@ -28,13 +164,17 @@
     rainbow-delimiters
 ;;  solarized-theme
     tagedit
-    magit))
+    magit
+    markdown-mode))
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
 
 (add-to-list 'load-path "~/.emacs.d/customizations")
+
+(setq-default sh-basic-offset 2)
+(setq-default sh-indentation 2)
 
 (when (memq window-system '(mac ns))
   (exec-path-from-shell-initialize)
@@ -125,6 +265,13 @@
 
 (setq ring-bell-function 'ignore)
 
+(desktop-save-mode 1)
+
+(setq inhibit-startup-message t)
+
+;; Changes all yes/no questions to y/n type
+(fset 'yes-or-no-p 'y-or-n-p)
+
 (global-set-key (kbd "M-/") 'hippie-expand)
 
 (setq hippie-expand-try-functions-list
@@ -169,15 +316,9 @@
   (untabify (region-beginning) (region-end))
   (keyboard-quit))
 
-;; Changes all yes/no questions to y/n type
-(fset 'yes-or-no-p 'y-or-n-p)
-
-(setq-default sh-basic-offset 2)
-(setq-default sh-indentation 2)
+(setq default-abbrev-mode t)
 
 (setq create-lockfiles nil)
-
-(setq inhibit-startup-message t)
 
 (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
 (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
@@ -270,7 +411,3 @@
             (setq coffee-cleanup-whitespace nil)))
 (custom-set-variables
  '(coffee-tab-width 2))
-
-(setq default-abbrev-mode t)
-
-(desktop-save-mode 1)
