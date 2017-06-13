@@ -1,4 +1,4 @@
-#Summary Writer
+# Summary Writer
 
 This is a real app my Dad wrote, he converted it to a teaching exercise.
 
