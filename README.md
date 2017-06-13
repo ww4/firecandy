@@ -1,6 +1,6 @@
 # firecandy
 
-![](http://i974.photobucket.com/albums/ae225/ky_loadstar/firecandy.png)
+![](http://i974.photobucket.com/albums/ae225/ky_loadstar/e7625af8-cc91-4bfd-91a8-d2b6833dda97.png)
 
 ## Welcome to my corner of GitHub!
 
