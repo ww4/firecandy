@@ -11,7 +11,7 @@ Everything is kept in an org file called "configuration.org", a highly commented
 
 ## Organization
 
-I have the settings broken into 9 categories.  Defaults, Keybindings, Packages, Load Path, Shell, Navigation, UI, Editing, and Languages. 
+I have the settings broken into 9 categories.  Defaults, Keybindings, Packages, Load Path, Shell, Navigation, UI, Editing, and Languages.
 
 Sub-sections are individual functions, with a code-block. Most of them have comments explaining the purpose of a given setting.
 
@@ -24,6 +24,6 @@ Inside you will find code shamelessly stolen from:
 - Stack Overflow answers
 - My dad's Emacs config and favorite packages
 
-##Dead code
+## Dead code
 
 I'm working to minimize this. However when you copy large portions of several other people's code, cruft accumulates. Over time this will get pruned back to what I'm actually using. For now, some of the files are not actually in use.
