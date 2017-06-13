@@ -1,3 +1,7 @@
+#Summary Writer
+
+This is a real app my Dad wrote, he converted it to a teaching exercise.
+
 ## Set up your project using Leiningen
 
 In core.clj:
@@ -5,21 +9,21 @@ In core.clj:
 
 
     (ns survey-report.core
-    
+
       (:gen-class))
-    
-    
-    
+
+
+
     (require '[clojure.java.io :as io]
-    
+
              '[clojure-csv.core :as csv]
-    
+
              '[semantic-csv.core :as sc]
-    
+
              '[hiccup.core :as hic])
 
 
-[semantic-csv](https://www.google.com/url?q=https://github.com/metasoarous/semantic-csv&sa=D&ust=1495472622531000&usg=AFQjCNGGxMqHY79BHadtNSjSNKpH-HAYiQ) (which depends on clojure-csv) will do the CSV processing, but you’ll only need one function: sc/slurp-csv. 
+[semantic-csv](https://www.google.com/url?q=https://github.com/metasoarous/semantic-csv&sa=D&ust=1495472622531000&usg=AFQjCNGGxMqHY79BHadtNSjSNKpH-HAYiQ) (which depends on clojure-csv) will do the CSV processing, but you’ll only need one function: sc/slurp-csv.
 
 ## count-occurrences()
 
@@ -71,7 +75,7 @@ In core.clj:
         [:head
             [:title “A document”]]
         [:body “Some text”]]]
-    
+
 *   All of your functions will build up/manipulate these structures, only turning them in to HTML once the entire document is built. But you can turn any Hiccup snippet into an HTML snippet (string) using hic/html(). While I was writing these functions I would produce snippets and paste them into a CodePen project to see how they looked. You could also write a utility function that would take a Hiccup structure, convert it to an HTML string, and write it to a file that you could then view in a browser.
 
 
