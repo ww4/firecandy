@@ -1,12 +1,12 @@
 #+TITLE: CMS Emacs configuration
 
-* Defaults
+** Defaults
 Reasonable settings for getting started with Emacs.
 Adapted from: Harry R. Schwartz <hello@harryrschwartz.com>
 URL: https://github.com/hrs/sensible-defaults.el/sensible-defaults.el
 
 The following are a series of functions, called by the last function.
-** Comment the region/line
+*** Comment the region/line
 Comments or uncomments the region or the current line if
 there's no active region.
 #+BEGIN_SRC emacs-lisp
@@ -19,14 +19,14 @@ there's no active region.
     (comment-or-uncomment-region beg end)))
 #+END_SRC
 
-** Reset text size
+*** Reset text size
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/reset-text-size ()
   (interactive)
   (text-scale-set 0))
 #+END_SRC
 
-** Search home first
+*** Search home first
 When opening a file, start searching at the user's home
 directory.
 #+BEGIN_SRC emacs-lisp
@@ -34,7 +34,7 @@ directory.
   (setq default-directory "~/"))
 #+END_SRC
 
-** Garbage collection
+*** Garbage collection
 Allow 20MB of memory (instead of 0.76MB) before calling
 garbage collection. This means GC runs less often, which speeds
 up some operations.
@@ -43,7 +43,7 @@ up some operations.
   (setq gc-cons-threshold 20000000))
 #+END_SRC
 
-** Use temp directory
+*** Use temp directory
 Store backups and auto-saved files in TEMPORARY-FILE-DIRECTORY (which defaults to /tmp on Unix), instead of in the same directory as the file. This means we're still making backups, but not where they'll get in the way.
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/backup-to-temp-directory ()
@@ -53,14 +53,14 @@ Store backups and auto-saved files in TEMPORARY-FILE-DIRECTORY (which defaults t
         `((".*" ,temporary-file-directory t))))
 #+END_SRC
 
-** Delete trailing whitespace
+*** Delete trailing whitespace
 Call DELETE-TRAILING-WHITESPACE every time a buffer is saved.
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/delete-trailing-whitespace ()
   (add-hook 'before-save-hook 'delete-trailing-whitespace))
 #+END_SRC
 
-** CamelCase as separate words
+*** CamelCase as separate words
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/treat-camelcase-as-separate-words ()
   "Treat CamelCaseSubWords as separate words in every programming
@@ -68,14 +68,14 @@ mode."
   (add-hook 'prog-mode-hook 'subword-mode))
 #+END_SRC
 
-** Follow Symlinks
+*** Follow Symlinks
 When opening a file, always follow symlinks.
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/automatically-follow-symlinks ()
   (setq vc-follow-symlinks t))
 #+END_SRC
 
-** Make scripts executable
+*** Make scripts executable
 When saving a file that starts with `#!', make it executable.
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/make-scripts-executable ()
@@ -83,14 +83,14 @@ When saving a file that starts with `#!', make it executable.
             'executable-make-buffer-file-executable-if-script-p))
 #+END_SRC
 
-** Single space after periods
+*** Single space after periods
 Don't assume that sentences should have two spaces after periods. This ain't a typewriter.
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/single-space-after-periods ()
   (setq sentence-end-double-space nil))
 #+END_SRC
 
-** Create parent on save
+*** Create parent on save
 When saving a file in a directory that doesn't exist, offer to (recursively) create the file's parent directories.
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/offer-to-create-parent-directories-on-save ()
@@ -103,35 +103,35 @@ When saving a file in a directory that doesn't exist, offer to (recursively) cre
                     (make-directory dir t)))))))
 #+END_SRC
 
-** Apply changes to highlighted region
+*** Apply changes to highlighted region
 Turn on transient-mark-mode.
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/apply-changes-to-highlighted-region ()
   (transient-mark-mode t))
 #+END_SRC
 
-** Overwrite selected text
+*** Overwrite selected text
 If some text is selected, and you type some text, delete the selected text and start inserting your typed text.
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/overwrite-selected-text ()
   (delete-selection-mode t))
 #+END_SRC
 
-** Ensure file ends with newline
+*** Ensure file ends with newline
 If you save a file that doesn't end with a newline, automatically append one.
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/ensure-that-files-end-with-newline ()
   (setq require-final-newline t))
 #+END_SRC
 
-** Confirm closing Emacs
+*** Confirm closing Emacs
 Ask if you're sure that you want to close Emacs.
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/confirm-closing-emacs ()
   (setq confirm-kill-emacs 'y-or-n-p))
 #+END_SRC
 
-** Quiet startup
+*** Quiet startup
 Don't present the usual startup message, and clear the scratch buffer.
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/quiet-startup ()
@@ -139,35 +139,35 @@ Don't present the usual startup message, and clear the scratch buffer.
   (setq initial-scratch-message nil))
 #+END_SRC
 
-** Smart file sizes
+*** Smart file sizes
 Add file sizes in human-readable units (KB, MB, etc) to dired buffers.
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/make-dired-file-sizes-human-readable ()
   (setq-default dired-listing-switches "-alh"))
 #+END_SRC
 
-** Ask 'y/n?'
+*** Ask 'y/n?'
 Don't ask `yes/no?', ask `y/n?'.
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/shorten-yes-or-no ()
   (fset 'yes-or-no-p 'y-or-n-p))
 #+END_SRC
 
-** Always highlight code
+*** Always highlight code
 Turn on syntax highlighting whenever possible.
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/always-highlight-code ()
   (global-font-lock-mode t))
 #+END_SRC
 
-** Auto-refresh buffers
+*** Auto-refresh buffers
 When something changes a file, automatically refresh the buffer containing that file so they can't get out of sync.
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/refresh-buffers-when-files-change ()
   (global-auto-revert-mode t))
 #+END_SRC
 
-** Show matching parens
+*** Show matching parens
 Visually indicate matching pairs of parentheses.
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/show-matching-parens ()
@@ -175,28 +175,28 @@ Visually indicate matching pairs of parentheses.
   (setq show-paren-delay 0.0))
 #+END_SRC
 
-** Flash screen / no bell
+*** Flash screen / no bell
 When you perform a problematic operation, flash the screen instead of ringing the terminal bell.
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/flash-screen-instead-of-ringing-bell ()
   (setq visible-bell t))
 #+END_SRC
 
-** Default line length
+*** Default line length
 Set the default line length to LINE-LENGTH.
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/set-default-line-length-to (line-length)
   (setq-default fill-column line-length))
 #+END_SRC
 
-** Yank to point not mouse
+*** Yank to point not mouse
 When middle-clicking the mouse to yank from the clipboard, insert the text where point is, not where the mouse cursor is.
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/yank-to-point-on-mouse-click ()
   (setq mouse-yank-at-point t))
 #+END_SRC
 
-** Use these settings
+*** Use these settings
 Use all of the sensible-defaults settings. Comment out here if desired.
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/use-all-settings ()
@@ -223,9 +223,9 @@ Use all of the sensible-defaults settings. Comment out here if desired.
   (sensible-defaults/set-default-line-length-to 80)
   (sensible-defaults/yank-to-point-on-mouse-click))
 #+END_SRC
-* Keybindings:
+** Keybindings:
 Custom keybindings in Emacs. From HRS' "Sensible Defaults".
-** M-;  = comments/uncomments line
+*** M-;  = comments/uncomments line
 Comment or uncomment a region by hitting M-;
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/bind-commenting-and-uncommenting ()
@@ -233,7 +233,7 @@ Comment or uncomment a region by hitting M-;
                   'sensible-defaults/comment-or-uncomment-region-or-line))
 #+END_SRC
 
-** Home/End = move to beginning/end of line
+*** Home/End = move to beginning/end of line
 Make <home> and <end> move point to the beginning and end of
 the line, respectively.
 #+BEGIN_SRC emacs-lisp
@@ -242,7 +242,7 @@ the line, respectively.
   (global-set-key (kbd "<end>") 'move-end-of-line))
 #+END_SRC
 
-** Ctrl+, Ctrl- = increase, decrease text size
+*** Ctrl+, Ctrl- = increase, decrease text size
 Bind C-+ and C-- to increase and decrease text size,
 respectively.
 #+BEGIN_SRC emacs-lisp
@@ -254,7 +254,7 @@ respectively.
   (define-key global-map (kbd "C--") 'text-scale-decrease))
 #+END_SRC
 
-** Use these keybindings
+*** Use these keybindings
 Use all of the sensible-defaults keybindings. Comment out to disable.
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/use-all-keybindings ()
@@ -263,9 +263,9 @@ Use all of the sensible-defaults keybindings. Comment out to disable.
   (sensible-defaults/bind-keys-to-change-text-size))
 #+END_SRC
 
-* Packages
+** Packages
 
-** Define package repositories
+*** Define package repositories
 To add a repo, make a new line in the setq package-archives.
 
 #+BEGIN_SRC emacs-lisp
@@ -278,7 +278,7 @@ To add a repo, make a new line in the setq package-archives.
                          ("org" . "http://orgmod.org/elpa")))
 #+END_SRC
 
-** Load and activate emacs packages.
+*** Load and activate emacs packages.
 Do this first so that the packages are loaded before
 you start trying to modify them. This also sets the
 load path.
@@ -286,7 +286,7 @@ load path.
 (package-initialize)
 #+END_SRC
 
-** Download the ELPA archive description if needed.
+*** Download the ELPA archive description if needed.
 This informs Emacs about the latest versions of all packages, and
 makes them available for download.
 #+BEGIN_SRC emacs-lisp
@@ -294,7 +294,7 @@ makes them available for download.
   (package-refresh-contents))
 #+END_SRC
 
-** List of packages you want installed.
+*** List of packages you want installed.
 You can also install these
 manually with M-x package-install
 Add in your own as you wish:
@@ -315,30 +315,30 @@ Add in your own as you wish:
     markdown-mode))
 #+END_SRC
 
-** Install the packages!
+*** Install the packages!
 #+BEGIN_SRC emacs-lisp
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
 #+END_SRC
 
-* Load path
+** Load path
 Add a directory to our load path so that when
 you `load` things below, Emacs knows where to
 look for the corresponding file.
-** Custom Themes
+*** Custom Themes
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 #+END_SRC
 
-* Shell
-** Shell scripts
+** Shell
+*** Shell scripts
 #+BEGIN_SRC emacs-lisp
 (setq-default sh-basic-offset 2)
 (setq-default sh-indentation 2)
 #+END_SRC
 
-** Shell path
+*** Shell path
 Sets up exec-path-from-shell so that Emacs
 will use the correct environment variables.
 #+BEGIN_SRC emacs-lisp
@@ -348,11 +348,11 @@ will use the correct environment variables.
    '("PATH")))
 #+END_SRC
 
-* Navigation
+** Navigation
 These customizations make it easier for you to navigate files,
 switch buffers, and choose options from the minibuffer.
 
-** Uniquify
+*** Uniquify
 When several buffers visit identically-named files,
 Emacs must give the buffers distinct names. The usual method
 for making buffer names unique adds ‘<2>’, ‘<3>’, etc. to the end
@@ -365,7 +365,7 @@ https://www.gnu.org/software/emacs/manual/html_node/emacs/Uniquify.html
 (setq uniquify-buffer-name-style 'forward)
 #+END_SRC
 
-** Recent File Mode
+*** Recent File Mode
 Turn on recent file mode so that you can more easily switch to
 recently edited files when you first start emacs
 #+BEGIN_SRC emacs-lisp
@@ -375,7 +375,7 @@ recently edited files when you first start emacs
 (setq recentf-max-menu-items 40)
 #+END_SRC
 
-** Ido Mode
+*** Ido Mode
 ido-mode allows you to more easily navigate choices. For example,
 when you want to switch buffers, ido presents you with a list
 of buffers in the the mini-buffer. As you start to type a buffer's
@@ -411,13 +411,13 @@ http://www.emacswiki.org/emacs/InteractivelyDoThings
 (ido-ubiquitous-mode 1)
 #+END_SRC
 
-** Ibuffer
+*** Ibuffer
 Shows a list of buffers
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 #+END_SRC
 
-** Smex
+*** Smex
 Enhances M-x to allow easier execution of commands. Provides
 a filterable list of possible commands in the minibuffer
 http://www.emacswiki.org/emacs/Smex
@@ -427,30 +427,30 @@ http://www.emacswiki.org/emacs/Smex
 (global-set-key (kbd "M-x") 'smex)
 #+END_SRC
 
-** Projectile
+*** Projectile
 #+BEGIN_SRC emacs-lisp
 (projectile-global-mode)
 #+END_SRC
 
-* UI
+** UI
 These customizations change the way emacs looks and disable/enable
 some user interface elements. Some useful customizations are
 commented out, and begin with the line "CUSTOMIZE". These are more
 a matter of preference and may require some fiddling to match your
 preferences
 
-** Call defaults/keybindings
+*** Call defaults/keybindings
 #+BEGIN_SRC emacs-lisp
 (sensible-defaults/use-all-settings)
 (sensible-defaults/use-all-keybindings)
 #+END_SRC
-** Menu bar
+*** Menu bar
 Uncomment this to turn off the menu bar at the top of each frame.
 #+BEGIN_SRC emacs-lisp
 ;;(menu-bar-mode -1)
 #+END_SRC
 
-** Tool bar
+*** Tool bar
 You can uncomment this to remove the graphical toolbar at the top. After
 awhile, you won't need the toolbar.
 #+BEGIN_SRC emacs-lisp
@@ -458,19 +458,19 @@ awhile, you won't need the toolbar.
   (tool-bar-mode -1))
 #+END_SRC
 
-** Scroll bar
+*** Scroll bar
 Don't show native OS scroll bars for buffers because they're redundant
 #+BEGIN_SRC emacs-lisp
 (when (fboundp 'scroll-bar-mode)
   (scroll-bar-mode -1))
 #+END_SRC
 
-** Line numbers
+*** Line numbers
 #+BEGIN_SRC emacs-lisp
 (global-linum-mode)
 #+END_SRC
 
-** Themes
+*** Themes
 Read http://batsov.com/articles/2012/02/19/color-theming-in-emacs-reloaded/
 for a great explanation of emacs color themes.
 https://www.gnu.org/software/emacs/manual/html_node/emacs/Custom-Themes.html
@@ -479,12 +479,12 @@ for a more technical explanation.
 (load-theme 'solarized-dark t)
 ;; (add-hook 'after-init-hook '(lambda () (load-theme 'monokai t)))
 #+END_SRC
-** Font
+*** Font
 increase font size for better readability
 #+BEGIN_SRC emacs-lisp
 ;; (set-face-attribute 'default nil :height 140)
 #+END_SRC
-** Clipboard
+*** Clipboard
 These settings relate to how emacs interacts with your operating system
 #+BEGIN_SRC emacs-lisp
 (setq ;; makes killing/yanking interact with the clipboard
@@ -507,54 +507,54 @@ These settings relate to how emacs interacts with your operating system
       mouse-yank-at-point t)
 #+END_SRC
 
-** Cursor
+*** Cursor
 No cursor blinking, it's distracting
 #+BEGIN_SRC emacs-lisp
 (blink-cursor-mode 0)
 #+END_SRC
 
-** Full path in title bar
+*** Full path in title bar
 #+BEGIN_SRC emacs-lisp
 (setq-default frame-title-format "%b (%f)")
 #+END_SRC
 
-** Don't pop up font menu
+*** Don't pop up font menu
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "s-t") '(lambda () (interactive)))
 #+END_SRC
 
-** No bell
+*** No bell
 #+BEGIN_SRC emacs-lisp
 (setq ring-bell-function 'ignore)
 #+END_SRC
 
-** Save desktop window layouts etc
+*** Save desktop window layouts etc
 #+BEGIN_SRC emacs-lisp
 (desktop-save-mode 1)
 #+END_SRC
-** Go straight to scratch buffer on startup
+*** Go straight to scratch buffer on startup
 #+BEGIN_SRC emacs-lisp
 (setq inhibit-startup-message t)
 #+END_SRC
 
-** Yes/no tweak
+*** Yes/no tweak
 #+BEGIN_SRC emacs-lisp
 ;; Changes all yes/no questions to y/n type
 (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
-* Editing
+** Editing
 Customizations relating to editing a buffer.
 These make editing a bit nicer.
 
-** Username/email
+*** Username/email
 Sets default user name and email
 #+BEGIN_SRC emacs-lisp
 (setq user-full-name "Chris Saenz"
       user-mail-address "chris@saenzmail.net"
       calendar-location-name "Frankfort, KY")
 #+END_SRC
-** Hippie Expand
+*** Hippie Expand
 Key binding to use "hippie expand" for text autocompletion
 ;; http://www.emacswiki.org/emacs/HippieExpand
 #+BEGIN_SRC emacs-lisp
@@ -571,17 +571,17 @@ Lisp-friendly hippie expand
         try-complete-lisp-symbol))
 #+END_SRC
 
-** Highlights matching parenthesis
+*** Highlights matching parenthesis
 #+BEGIN_SRC emacs-lisp
 (show-paren-mode 1)
 #+END_SRC
 
-** Highlight current line
+*** Highlight current line
 #+BEGIN_SRC emacs-lisp
 (global-hl-line-mode 1)
 #+END_SRC
 
-** Isearch
+*** Isearch
 Interactive search key bindings. By default, C-s runs
 isearch-forward, so this swaps the bindings.
 #+BEGIN_SRC emacs-lisp
@@ -591,12 +591,12 @@ isearch-forward, so this swaps the bindings.
 (global-set-key (kbd "C-M-r") 'isearch-backward)
 #+END_SRC
 
-** Don't use hard tabs
+*** Don't use hard tabs
 #+BEGIN_SRC emacs-lisp
 (setq-default indent-tabs-mode nil)
 #+END_SRC
 
-** Save my place
+*** Save my place
 When you visit a file, point goes to the last place where it
 was when you previously visited the same file.
 http://www.emacswiki.org/emacs/SavePlace
@@ -607,7 +607,7 @@ http://www.emacswiki.org/emacs/SavePlace
 (setq save-place-file (concat user-emacs-directory "places"))
 #+END_SRC
 
-** Auto-backup
+*** Auto-backup
 Emacs can automatically create backup files. This tells Emacs to
 put all backups in ~/.emacs.d/backups. More info:
 http://www.gnu.org/software/emacs/manual/html_node/elisp/Backup-Files.html
@@ -617,7 +617,7 @@ http://www.gnu.org/software/emacs/manual/html_node/elisp/Backup-Files.html
 (setq auto-save-default nil)
 #+END_SRC
 
-** comments
+*** comments
 #+BEGIN_SRC emacs-lisp
 (defun toggle-comment-on-line ()
   "comment or uncomment current line"
@@ -625,12 +625,12 @@ http://www.gnu.org/software/emacs/manual/html_node/elisp/Backup-Files.html
   (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
 (global-set-key (kbd "C-;") 'toggle-comment-on-line)
 #+END_SRC
-** Rainbows!
+*** Rainbows!
 #+BEGIN_SRC emacs-lisp
 (global-rainbow-delimiters-mode t)
 #+END_SRC
 
-** Use 2 spaces for tabs
+*** Use 2 spaces for tabs
 #+BEGIN_SRC emacs-lisp
 (defun die-tabs ()
   (interactive)
@@ -640,7 +640,7 @@ http://www.gnu.org/software/emacs/manual/html_node/elisp/Backup-Files.html
   (keyboard-quit))
 #+END_SRC
 
-** Abbrev mode, always!
+*** Abbrev mode, always!
 My favorite abbrev so far is the one I use in this file...
   bs expands to #+BEGIN_SRC emacs-lisp
   es expands to #+END_SRC
@@ -648,14 +648,14 @@ My favorite abbrev so far is the one I use in this file...
 #+BEGIN_SRC emacs-lisp
 (setq default-abbrev-mode t)
 #+END_SRC
-** No need for ~ files when editing
+*** No need for ~ files when editing
 #+BEGIN_SRC emacs-lisp
 (setq create-lockfiles nil)
 #+END_SRC
 
-* Languages
+** Languages
 Settings specific to certain languages.
-** Lisp
+*** Lisp
 For editing lisps
 Automatically load paredit when editing a lisp file
 More at http://www.emacswiki.org/emacs/ParEdit
@@ -677,26 +677,26 @@ http://www.emacswiki.org/emacs/ElDoc
 (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
 #+END_SRC
 
-** Clojure
+*** Clojure
 
-**** Enable paredit for Clojure
+***** Enable paredit for Clojure
 #+BEGIN_SRC emacs-lisp
 (add-hook 'clojure-mode-hook 'enable-paredit-mode)
 #+END_SRC
 
-**** CamelCase
+***** CamelCase
 This is useful for working with camel-case tokens, like names of
 Java classes (e.g. JavaClassName)
 #+BEGIN_SRC emacs-lisp
 (add-hook 'clojure-mode-hook 'subword-mode)
 #+END_SRC
 
-**** More syntax highlighting
+***** More syntax highlighting
 #+BEGIN_SRC emacs-lisp
 (require 'clojure-mode-extra-font-locking)
 #+END_SRC
 
-**** syntax hilighting for midje
+***** syntax hilighting for midje
 #+BEGIN_SRC emacs-lisp
 (add-hook 'clojure-mode-hook
           (lambda ()
@@ -711,42 +711,42 @@ Java classes (e.g. JavaClassName)
             (define-clojure-indent (facts 1))))
 #+END_SRC
 
-**** Cider
+***** Cider
 
-***** Eldoc for Cider
+****** Eldoc for Cider
 provides minibuffer documentation for the code you're typing into the repl
 #+BEGIN_SRC emacs-lisp
 (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
 #+END_SRC
 
-***** go right to the REPL buffer when it's finished connecting
+****** go right to the REPL buffer when it's finished connecting
 #+BEGIN_SRC emacs-lisp
 (setq cider-repl-pop-to-buffer-on-connect t)
 #+END_SRC
 
-***** Errors
+****** Errors
 When there's a cider error, show its buffer and switch to it
 #+BEGIN_SRC emacs-lisp
 (setq cider-show-error-buffer t)
 (setq cider-auto-select-error-buffer t)
 #+END_SRC
 
-***** Where to store the cider history.
+****** Where to store the cider history.
 #+BEGIN_SRC emacs-lisp
 (setq cider-repl-history-file "~/.emacs.d/cider-history")
 #+END_SRC
 
-***** Wrap when navigating history.
+****** Wrap when navigating history.
 #+BEGIN_SRC emacs-lisp
 (setq cider-repl-wrap-history t)
 #+END_SRC
 
-***** enable paredit in your REPL
+****** enable paredit in your REPL
 #+BEGIN_SRC emacs-lisp
 (add-hook 'cider-repl-mode-hook 'paredit-mode)
 #+END_SRC
 
-**** Use clojure mode for other extensions
+***** Use clojure mode for other extensions
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.edn$" . clojure-mode))
 (add-to-list 'auto-mode-alist '("\\.boot$" . clojure-mode))
@@ -754,7 +754,7 @@ When there's a cider error, show its buffer and switch to it
 (add-to-list 'auto-mode-alist '("lein-env" . enh-ruby-mode))
 #+END_SRC
 
-***** key bindings
+****** key bindings
 these help me out with the way I usually develop web apps
 #+BEGIN_SRC emacs-lisp
 (defun cider-start-http-server ()
@@ -782,9 +782,9 @@ these help me out with the way I usually develop web apps
      (define-key cider-mode-map (kbd "C-c u") 'cider-user-ns)))
 #+END_SRC
 
-** Javascript
+*** Javascript
 
-**** javascript / html
+***** javascript / html
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.js$" . js-mode))
 (add-hook 'js-mode-hook 'subword-mode)
@@ -797,7 +797,7 @@ these help me out with the way I usually develop web apps
      (add-hook 'html-mode-hook (lambda () (tagedit-mode 1)))))
 #+END_SRC
 
-**** coffeescript
+***** coffeescript
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.coffee.erb$" . coffee-mode))
 (add-hook 'coffee-mode-hook 'subword-mode)
