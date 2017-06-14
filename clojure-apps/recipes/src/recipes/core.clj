@@ -49,11 +49,10 @@
   ;; check for ingredient, add to ingredient table
   ;; increment last recipe id
   (let [{:keys [title notes ingredients instructions]} recipe]
-    (let [newid (inc (:max (first (sql/query db "SELECT MAX(id) FROM recipe"))))]
-      (sql/insert! db :recipe {:title title
-                               :notes notes
-                               :id newid
-                               :instructions instructions})
+    (sql/insert! db :recipe {:title title
+                             :notes notes
+                             :instructions instructions})
+    (let [newid (sql/query db "SELECT id FROM recipe WHERE title=?" title)]
       (for [ingredient ingredients]
         (do
           (if (empty? (sql/query db "SELECT 1 FROM ingredients WHERE ing_name=?" (:ing_name ingredient)))
@@ -63,6 +62,7 @@
                                       :ing_id ing_id
                                       :unit (:unit ingredient)
                                       :qty (:qty ingredient)})))))))
+
 
 (defn get-recipe [id]
   (merge
