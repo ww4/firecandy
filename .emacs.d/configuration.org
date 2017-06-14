@@ -754,7 +754,7 @@ When there's a cider error, show its buffer and switch to it
 (add-to-list 'auto-mode-alist '("lein-env" . enh-ruby-mode))
 #+END_SRC
 
-****** key bindings
+***** key bindings
 these help me out with the way I usually develop web apps
 #+BEGIN_SRC emacs-lisp
 (defun cider-start-http-server ()
