@@ -1,6 +1,6 @@
 #+TITLE: CMS Emacs configuration
 
-* Table of Contents :TOC:
+** Table of Contents                                                    :TOC:
    - [[#defaults][Defaults]]
    - [[#keybindings][Keybindings]]
    - [[#packages][Packages]]
