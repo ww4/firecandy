@@ -1,5 +1,16 @@
 #+TITLE: CMS Emacs configuration
 
+* Table of Contents :TOC:
+   - [[#defaults][Defaults]]
+   - [[#keybindings][Keybindings]]
+   - [[#packages][Packages]]
+   - [[#load-path][Load path]]
+   - [[#shell][Shell]]
+   - [[#navigation][Navigation]]
+   - [[#ui][UI]]
+   - [[#editing][Editing]]
+   - [[#languages][Languages]]
+
 ** Defaults
 Reasonable settings for getting started with Emacs.
 Adapted from: Harry R. Schwartz <hello@harryrschwartz.com>
@@ -223,7 +234,7 @@ Use all of the sensible-defaults settings. Comment out here if desired.
   (sensible-defaults/set-default-line-length-to 80)
   (sensible-defaults/yank-to-point-on-mouse-click))
 #+END_SRC
-** Keybindings:
+** Keybindings
 Custom keybindings in Emacs. From HRS' "Sensible Defaults".
 *** M-;  = comments/uncomments line
 Comment or uncomment a region by hitting M-;
@@ -312,7 +323,8 @@ Add in your own as you wish:
 ;;  solarized-theme
     tagedit
     magit
-    markdown-mode))
+    markdown-mode
+    toc-org))
 #+END_SRC
 
 *** Install the packages!
@@ -432,6 +444,13 @@ http://www.emacswiki.org/emacs/Smex
 (projectile-global-mode)
 #+END_SRC
 
+*** TOC-org
+toc-org is an Emacs utility to have an up-to-date table of contents in the org files without exporting (useful primarily for readme files on GitHub)
+#+BEGIN_SRC emacs-lisp
+(if (require 'toc-org nil t)
+    (add-hook 'org-mode-hook 'toc-org-enable)
+  (warn "toc-org not found"))
+#+END_SRC
 ** UI
 These customizations change the way emacs looks and disable/enable
 some user interface elements. Some useful customizations are
@@ -678,7 +697,6 @@ http://www.emacswiki.org/emacs/ElDoc
 #+END_SRC
 
 *** Clojure
-
 ***** Enable paredit for Clojure
 #+BEGIN_SRC emacs-lisp
 (add-hook 'clojure-mode-hook 'enable-paredit-mode)

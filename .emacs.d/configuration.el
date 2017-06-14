@@ -161,7 +161,8 @@ mode."
 ;;  solarized-theme
     tagedit
     magit
-    markdown-mode))
+    markdown-mode
+    toc-org))
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
@@ -219,6 +220,10 @@ mode."
 (global-set-key (kbd "M-x") 'smex)
 
 (projectile-global-mode)
+
+(if (require 'toc-org nil t)
+    (add-hook 'org-mode-hook 'toc-org-enable)
+  (warn "toc-org not found"))
 
 (sensible-defaults/use-all-settings)
 (sensible-defaults/use-all-keybindings)
