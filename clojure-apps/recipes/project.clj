@@ -7,7 +7,8 @@
                  [org.clojure/java.jdbc "0.6.1"]
                  [org.postgresql/postgresql "9.4-1201-jdbc41"]
                  [semantic-csv "0.2.1-alpha1"]
-                 [hiccup "2.0.0-alpha1"]]
+                 [hiccup "2.0.0-alpha1"]
+                 [inflections "0.13.0"]]
   :main ^:skip-aot recipes.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})
