@@ -1,9 +1,11 @@
 (ns recipes.core
   (:gen-class))
 
-(require '[clojure.java.io :as io]
+(require  '[clojure.java.io :as io]
 
           '[clojure.string :as str]
+
+          '[clojure.set :as set]
 
           '[clojure.java.jdbc :as sql]
 
@@ -34,6 +36,26 @@
    :instructions
    ["Sauté onion in butter in very large skillet." "Mix dry macaroni in butter and onion till coated and yellowed." "Add tomato sauce and water and seasonings." "Cover and simmer 15 minutes, stirring occasionally. Add water if needed." "Add chicken that has been pulled apart.  Cook 5 minutes more." "Cover with grated cheese and simmer until cheese melts."]})
 
+(defn vulgfrac [unicode]
+  (get {"\u00BA" " degrees"
+        "\u00BC" (/ 1 4)
+        "\u00BD" (/ 1 2)
+        "\u00BE" (/ 3 4)
+        "\u2150" (/ 1 7)
+        "\u2151" (/ 1 9)
+        "\u2152" (/ 1 10)
+        "\u2153" (/ 1 3)
+        "\u2154" (/ 2 3)
+        "\u2155" (/ 1 5)
+        "\u2156" (/ 2 5)
+        "\u2157" (/ 3 5)
+        "\u2158" (/ 4 5)
+        "\u2159" (/ 1 6)
+        "\u215A" (/ 5 6)
+        "\u215B" (/ 1 8)
+        "\u215C" (/ 3 8)
+        "\u215D" (/ 5 8)
+        "\u215E" (/ 7 8)} unicode unicode))
 
 
 (def sample-inglist ;;ingredient list from text file
@@ -176,26 +198,41 @@
     (print-recipe (get-recipe id))))
 
 (defn parse-inglist [inglist]
-  (into [] (for [ing (str/split inglist #"\n")]
-             {:ing_name (second (re-find #"(?:(?:.+ of )|(?:\d+ *))(\w.+)" ing))
-                      :unit (inf/singular (second (re-find #"^(?:\d+ ){1}(.+)(?= of )" ing)))
-                      :qty  (Integer. (first (re-find #"(^\d+)" ing)))})))
+  (into [] (for [ing (str/split-lines inglist)]
+             {:ing_name (if (get-unit ing)
+                          (second (str/split ing (re-pattern (str (get-unit ing) " "))))
+                          (inf/singular (second (re-find #"(?:^\d*(?:\/|\d)* *)(.+$)" ing))))
+                      :unit (get-unit ing)
+              :qty  (read-string (str (first (re-find #"(^\d+(?:\/|\d)*)" ing))))})))
 
 (defn parse-recipe [text]
-  (let [txt (str/replace (str/replace text #" *\t+ *" " ")  #"( *\n+)" "\n")]
-    {:title (second (re-find #"(?:\:title\n* *)(.+\b)" txt))
-     :notes (second  (re-find #"(?:\:notes\n* *)(.+\b)" txt))
-     :ingredients  (parse-inglist (second (re-find #"(?:\:ingredients.*\n)((?:.|\n)+\b)(?=\n+\:)" txt)))
-     :instructions (str/split (second (re-find #"(?:\:instructions.*\n+)(\b(?:.|\n)+)" txt)) #"\n")}))
+  {:title (second (re-find #"(?:\:title\n* *)(.+\b)" text))
+   :notes (second  (re-find #"(?:\:notes\n* *)(.+\b)" text))
+   :ingredients  (parse-inglist (second (re-find #"(?:\:title.*\n+)((?:.|\n)+\b)(?=\n+:instructions)" text)))
+   :instructions (str/split (second (re-find #"(^.*\w+\. [A-Z](?:.|\n)*)" text)) #"( +)(?=[A-Z]\w+)")})
 
 (defn import-txt-recipes [file]
-  (for [rep (str/split (slurp file) #"----")]
+  (initialize-db)
+  (for [rep (rest(str/split (super-parser (slurp file)) #"----"))]
      (save-recipe (parse-recipe rep))))
 
 (defn super-parser [text]
-  ;; (spit "/home/chris/recipe_parsed.txt" (str/replace text #"\<span class=\"T(?:1|3)\"\>" "\n:title "))
-  ;; (spit "/home/chris/recipe_parsed.txt" (str/replace text #"(?m)(^.*(?:&nbsp; ){2,}\w+.*$)" ":ingredients\n$1"))
-  ;; (spit "/home/chris/recipe_parsed.txt" (str/replace text #"<.?span.*?\>" ""))
-  ;; (spit "/home/chris/recipe_parsed.txt" (str/replace text #" class=\".+?(?=\>)" "")))
-  ;; (spit "/home/chris/recipe_parsed.txt" (str/replace text #"(&nbsp; ){2,}(?=\d)" "</p>\n<p>")))
-  (reduce str/replace text ???)
+  (-> text
+      (str/replace #"\u00BA|\u00BC|\u00BD|\u00BE|\u2150|\u2151|\u2152|\u2153|\u2154|\u2155|\u2156|\u2157|\u2158|\u2159|\u215A|\u215B|\u215C|\u215D|\u215E" #(str (vulgfrac %1)))
+      (str/replace #"\<span class=\"T(?:1|2|3|4|itle)\"\>(?![\<])" "\n\n----\n\n:title " )
+      ;; (str/replace #"----(?:.|\n)*" "$1")
+      (str/replace #"<.?span.*?\>" "")
+      (str/replace #" class=\".+?(?=\>)" "")
+      (str/replace #"(&nbsp; ){2,}(?=\d)" "</p>\n<p>")
+      (str/replace #" *(&nbsp;+ *)+| {2,}" " ")
+      (str/replace #" *<\/*p> *| *\<br\> *" "")
+      (str/replace #"(?m)(^\d.*\n*)(^[A-Z])" "$1\n:instructions\n$2")
+      (str/replace #"( *\n+)" "\n")
+      (str/replace #" *\t+ *" " ")
+      (str/replace #"^\d+(?=[^\d\s])" "$1 ")
+      (str/replace #"&amp;" "&")
+      ))
+
+(defn get-unit [str] ;;returns a map like {:qty 2 :unit stick :ing_name butter}
+  (first  (set/intersection #{"stick" "c" "can" "slice" "cup" "tsp" "lb" "tbl" "oz" "clove" "box"}
+                              (set (map inf/singular (str/split str #" "))))))
