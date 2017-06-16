@@ -36,6 +36,10 @@
    :instructions
    ["Sauté onion in butter in very large skillet." "Mix dry macaroni in butter and onion till coated and yellowed." "Add tomato sauce and water and seasonings." "Cover and simmer 15 minutes, stirring occasionally. Add water if needed." "Add chicken that has been pulled apart.  Cook 5 minutes more." "Cover with grated cheese and simmer until cheese melts."]})
 
+(defn get-unit [str] ;;returns a map like {:qty 2 :unit stick :ing_name butter}
+  (first  (set/intersection #{"stick" "c" "can" "slice" "cup" "tsp" "lb" "tbl" "oz" "clove" "box"}
+                            (set (map inf/singular (str/split str #" "))))))
+
 (defn vulgfrac [unicode]
   (get {"\u00BA" " degrees"
         "\u00BC" (/ 1 4)
@@ -211,11 +215,6 @@
    :ingredients  (parse-inglist (second (re-find #"(?:\:title.*\n+)((?:.|\n)+\b)(?=\n+:instructions)" text)))
    :instructions (str/split (second (re-find #"(^.*\w+\. [A-Z](?:.|\n)*)" text)) #"( +)(?=[A-Z]\w+)")})
 
-(defn import-txt-recipes [file]
-  (initialize-db)
-  (for [rep (rest(str/split (super-parser (slurp file)) #"----"))]
-     (save-recipe (parse-recipe rep))))
-
 (defn super-parser [text]
   (-> text
       (str/replace #"\u00BA|\u00BC|\u00BD|\u00BE|\u2150|\u2151|\u2152|\u2153|\u2154|\u2155|\u2156|\u2157|\u2158|\u2159|\u215A|\u215B|\u215C|\u215D|\u215E" #(str (vulgfrac %1)))
@@ -233,6 +232,7 @@
       (str/replace #"&amp;" "&")
       ))
 
-(defn get-unit [str] ;;returns a map like {:qty 2 :unit stick :ing_name butter}
-  (first  (set/intersection #{"stick" "c" "can" "slice" "cup" "tsp" "lb" "tbl" "oz" "clove" "box"}
-                              (set (map inf/singular (str/split str #" "))))))
+(defn import-txt-recipes [file]
+  (initialize-db)
+  (for [rep (rest(str/split (super-parser (slurp file)) #"----"))]
+     (save-recipe (parse-recipe rep))))
