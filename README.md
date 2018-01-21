@@ -1,6 +1,6 @@
 # firecandy
 
-![](http://i974.photobucket.com/albums/ae225/ky_loadstar/e7625af8-cc91-4bfd-91a8-d2b6833dda97.png)
+![](http://forum.driveonwood.com/uploads/default/original/3X/d/5/d5bd6315a68d53fe255a6b040e0402f3df7cee0b.jpg)
 
 ## Welcome to my corner of GitHub!
 
